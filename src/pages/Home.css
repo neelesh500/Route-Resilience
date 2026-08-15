@@ -1,0 +1,205 @@
+.home-container {
+    padding: 0 5%;
+    position: relative;
+    z-index: 10;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.top-tagline {
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    margin-top: 2rem;
+    font-weight: 600;
+}
+
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4rem;
+    flex: 1;
+    margin-bottom: 2rem;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 60%;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    text-transform: uppercase;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    margin-bottom: 2rem;
+    line-height: 1.1;
+}
+
+.text-gradient-ternary {
+    background: linear-gradient(135deg, #fff 0%, #00ff66 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-description-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    background: rgba(11, 14, 20, 0.7);
+    border-left: 4px solid var(--accent);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hero-right-panels {
+    flex: 0 0 35%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.process-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.process-step {
+    width: 280px;
+    padding: 1rem;
+    text-align: center;
+    background: rgba(11, 14, 20, 0.85);
+}
+
+.process-step h5 {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.process-arrow {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    transform: rotate(90deg);
+}
+
+.step-img {
+    height: 140px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bg-sat {
+    background-image: url('https://images.unsplash.com/photo-1518349619113-03114f06ac3a?q=80&w=2070&auto=format&fit=crop');
+    filter: brightness(0.8);
+}
+
+.bg-extract {
+    background-image: url('https://images.unsplash.com/photo-1558227092-986c7dbced42?q=80&w=2070&auto=format&fit=crop');
+    filter: contrast(1.2) grayscale(1);
+}
+
+.bg-graph {
+    background-image: url('https://plus.unsplash.com/premium_photo-1673827419142-c2e7baee7081?q=80&w=2036&auto=format&fit=crop');
+    filter: hue-rotate(90deg) brightness(1.2);
+}
+
+.border-glow {
+    border-color: rgba(255, 0, 60, 0.5);
+    box-shadow: 0 0 20px rgba(255, 0, 60, 0.2);
+}
+
+.bottom-features {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    margin: 0 -5.5%;
+    /* break out of padding to span full width */
+    padding-left: 5.5%;
+    padding-right: 5.5%;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.feature-item h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+    color: #fff;
+}
+
+.feature-item p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.mission-tag {
+    text-align: right;
+    font-family: var(--font-heading);
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+@media (max-width: 1024px) {
+    .hero {
+        flex-direction: column;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-right-panels {
+        width: 100%;
+    }
+
+    .process-flow {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .process-arrow {
+        transform: rotate(0deg);
+    }
+
+    .bottom-features {
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+}

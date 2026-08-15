@@ -1,0 +1,44 @@
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.metric-card {
+    border-top: 4px solid var(--secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 100% 0%, var(--secondary-glow), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.metric-card:hover::before {
+    opacity: 1;
+}
+
+.metric-card h3,
+.metric-card p {
+    position: relative;
+    z-index: 1;
+}
+
+.metric-card h3 {
+    margin-bottom: 1rem;
+    color: #fff;
+    font-size: 1.3rem;
+}
+
+.metric-card p {
+    color: var(--text-muted);
+}
