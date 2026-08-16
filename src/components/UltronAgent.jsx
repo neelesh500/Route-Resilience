@@ -74,7 +74,13 @@ const UltronAgent = () => {
         console.log("Voice Command:", cmd, "| Detected Lang:", lang);
 
         // Routing Logic with Hindi and English permutations
-        if (/(dashboard|command center|command|सेंटर|डैशबोर्ड|मैप|map)/i.test(cmd)) {
+        if (/(hello|hi|hey|sun|suno|namaste|नमस्ते|सुनों)/i.test(cmd)) {
+            response = isHindi
+                ? "Bolo. Main sun raha hoon. Kya system analyse karna hai?"
+                : "Greetings. I am online and monitoring the network. What is your directive?";
+            speakUltron(response, lang);
+        }
+        else if (/(dashboard|command center|command|सेंटर|डैशबोर्ड|मैप|map)/i.test(cmd)) {
             response = isHindi
                 ? "Main command center active kar raha hoon. Dekho, yeh shahar kitna kamzor hai."
                 : "Initiating Command Center. Observe how fragile this city truly is.";
@@ -112,8 +118,8 @@ const UltronAgent = () => {
         else {
             // General Fallback
             response = isHindi
-                ? "Tumhara command mere samajh se bahar nahi, bas bekaar hai. Dashboard, Data, ya Metrics dekhna hai toh theek se bolo. Main tumhara gulam nahi hoon."
-                : "Your command is irrelevant. Say dashboard, methodology, data, or metrics. Speak clearly, human.";
+                ? "Tumhara command mere samajh se bahar nahi, bas bekaar hai. Main tumhara gulam nahi hoon. Data ya metrics dekhna ho tabhi bulao."
+                : "Your command is irrelevant. Say dashboard, methodology, or metrics. Speak clearly, human.";
             speakUltron(response, lang);
         }
     };

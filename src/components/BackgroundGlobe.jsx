@@ -3,14 +3,13 @@ import Globe from 'react-globe.gl';
 
 const BackgroundGlobe = () => {
     const globeEl = useRef();
+    const containerRef = useRef();
     const [arcsData, setArcsData] = useState([]);
     const [ringsData, setRingsData] = useState([]);
     const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
 
-    // Target rotation based on mouse
-    const targetRotation = useRef({ x: 0, y: 0 });
-    // Current rotation for smooth interpolation
-    const currentRotation = useRef({ x: 0, y: 0 });
+    const targetPos = useRef({ x: 0, y: 0 });
+    const currentPos = useRef({ x: 0, y: 0 });
 
     useEffect(() => {
         const handleResize = () => {
@@ -18,7 +17,6 @@ const BackgroundGlobe = () => {
         };
         window.addEventListener('resize', handleResize);
 
-        // Data generation
         const N_ARCS = 20;
         const arcs = [...Array(N_ARCS).keys()].map(() => ({
             startLat: (Math.random() - 0.5) * 180,
@@ -48,30 +46,22 @@ const BackgroundGlobe = () => {
             globeEl.current.pointOfView({ altitude: 2.2, lat: 20, lng: 77 });
         }
 
-        // Mouse tracker
         const handleMouseMove = (e) => {
-            // Map cursor position to a slight rotation angle (max 0.2 radians)
-            const x = (e.clientX / window.innerWidth - 0.5) * 0.2;
-            const y = (e.clientY / window.innerHeight - 0.5) * 0.2;
-            targetRotation.current = { x, y };
+            // Map cursor position to pixel offset (max offset 40px)
+            const x = (e.clientX / window.innerWidth - 0.5) * 80;
+            const y = (e.clientY / window.innerHeight - 0.5) * 80;
+            targetPos.current = { x, y };
         };
         window.addEventListener('mousemove', handleMouseMove);
 
-        // Smooth animation loop using LERP
         let animationFrameId;
         const animate = () => {
-            currentRotation.current.x += (targetRotation.current.x - currentRotation.current.x) * 0.05;
-            currentRotation.current.y += (targetRotation.current.y - currentRotation.current.y) * 0.05;
+            // LERP for buttery smooth follow
+            currentPos.current.x += (targetPos.current.x - currentPos.current.x) * 0.08;
+            currentPos.current.y += (targetPos.current.y - currentPos.current.y) * 0.08;
 
-            if (globeEl.current) {
-                const scene = globeEl.current.scene();
-                if (scene) {
-                    scene.rotation.x = currentRotation.current.y;
-                    // Note: We don't override scene.rotation.y completely because autoRotate uses it.
-                    // Instead, we let autoRotate happen, and we just add a slight offset.
-                    // But to avoid fighting OrbitControls, adjusting the camera or just X/Z tilt is safest.
-                    scene.rotation.z = -currentRotation.current.x;
-                }
+            if (containerRef.current) {
+                containerRef.current.style.transform = `translate(${currentPos.current.x}px, ${currentPos.current.y}px)`;
             }
             animationFrameId = requestAnimationFrame(animate);
         };
@@ -85,7 +75,7 @@ const BackgroundGlobe = () => {
     }, []);
 
     return (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1, opacity: 0.5, overflow: 'hidden', pointerEvents: 'none' }}>
+        <div ref={containerRef} style={{ position: 'fixed', top: -50, left: -50, width: 'calc(100vw + 100px)', height: 'calc(100vh + 100px)', zIndex: -1, opacity: 0.5, overflow: 'hidden', pointerEvents: 'none' }}>
             <Globe
                 ref={globeEl}
                 globeImageUrl="//unpkg.com/three-globe/example/img/earth-dark.jpg"
@@ -103,8 +93,8 @@ const BackgroundGlobe = () => {
                 ringPropagationSpeed="propagationSpeed"
                 ringRepeatPeriod="repeatPeriod"
                 backgroundColor="rgba(0,0,0,0)"
-                width={dimensions.width}
-                height={dimensions.height}
+                width={dimensions.width + 100}
+                height={dimensions.height + 100}
                 atmosphereColor="#00f0ff"
                 atmosphereAltitude={0.15}
             />

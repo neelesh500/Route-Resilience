@@ -116,21 +116,18 @@
 }
 
 .bg-sat {
-    background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800');
-    /* satellite map image */
+    background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800');
     filter: brightness(0.9) contrast(1.1);
 }
 
 .bg-extract {
-    background-image: url('https://images.unsplash.com/photo-1558227092-986c7dbced42?q=80&w=800&auto=format&fit=crop');
-    /* 2nd image as requested */
-    filter: contrast(1.2) grayscale(1);
+    background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=800');
+    filter: hue-rotate(180deg) contrast(1.4) brightness(1.2);
 }
 
 .bg-graph {
-    background-image: url('https://plus.unsplash.com/premium_photo-1673827419142-c2e7baee7081?q=80&w=800&auto=format&fit=crop');
-    /* original graph image */
-    filter: hue-rotate(90deg) brightness(1.2);
+    background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800');
+    filter: hue-rotate(90deg) brightness(1.2) contrast(1.2);
 }
 
 .border-glow {
