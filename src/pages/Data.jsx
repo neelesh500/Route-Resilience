@@ -28,6 +28,12 @@ const Data = () => {
             desc: "Custom generated dataset with artificial cloud, shadow, and canopy covers applied to clear satellite imagery.",
             size: "4 GB",
             type: "Augmented Images"
+        },
+        {
+            title: "NHAI National Highways Grid",
+            desc: "Geospatial vector mapping of India's Golden Quadrilateral and all major state expressways for centrality analysis.",
+            size: "18 GB",
+            type: "GeoJSON Network"
         }
     ];
 
