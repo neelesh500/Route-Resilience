@@ -3,76 +3,147 @@ import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from 'react-le
 import { AlertCircle, RefreshCw, Zap } from 'lucide-react';
 import './Dashboard.css';
 
-// Mock High-Density Indian Data
-const center = [22.9734, 78.6569]; // Center of India
+const center = [20, 0]; // Global Center
 
-// Criticality Worth simulated (Betweenness Centrality)
+// Country Color Definitions for Edges
+const regionColors = {
+    'India': '#00ff66',
+    'USA': '#00f0ff',
+    'Europe': '#b500ff',
+    'EastAsia': '#ff003c',
+    'MiddleEast': '#ffb800',
+    'SouthAmerica': '#ff00a0',
+    'Africa': '#ff6600',
+    'Australia': '#ff00ff',
+    'Russia': '#0099ff',
+    'Canada': '#00f0ff',
+    'Global': '#ffffff' // For intercontinental
+};
+
 const nodes = [
-    { id: 1, pos: [28.7041, 77.1025], centrality: 0.95, name: 'Delhi NCR Hub', region: 'North' },
-    { id: 2, pos: [19.0760, 72.8777], centrality: 0.98, name: 'Mumbai Transit', region: 'West' },
-    { id: 3, pos: [12.9716, 77.5946], centrality: 0.92, name: 'BLR Tech Center', region: 'South' },
-    { id: 4, pos: [13.0827, 80.2707], centrality: 0.88, name: 'Chennai Port', region: 'South' },
-    { id: 5, pos: [22.5726, 88.3639], centrality: 0.85, name: 'Kolkata Gateway', region: 'East' },
-    { id: 6, pos: [17.3850, 78.4867], centrality: 0.83, name: 'Hyderabad Grid', region: 'South' },
-    { id: 7, pos: [18.5204, 73.8567], centrality: 0.78, name: 'Pune Sub-hub', region: 'West' },
-    { id: 8, pos: [23.0225, 72.5714], centrality: 0.81, name: 'Ahmedabad Base', region: 'West' },
-    { id: 9, pos: [26.9124, 75.7873], centrality: 0.75, name: 'Jaipur Route', region: 'North' },
-    { id: 10, pos: [26.8467, 80.9462], centrality: 0.7, name: 'Lucknow Node', region: 'North' },
-    { id: 11, pos: [26.4499, 80.3319], centrality: 0.65, name: 'Kanpur Industrial', region: 'North' },
-    { id: 12, pos: [21.1458, 79.0882], centrality: 0.72, name: 'Nagpur Central', region: 'Central' },
-    { id: 13, pos: [22.7196, 75.8577], centrality: 0.68, name: 'Indore Link', region: 'Central' },
-    { id: 14, pos: [23.2599, 77.4126], centrality: 0.66, name: 'Bhopal Data', region: 'Central' },
-    { id: 15, pos: [17.6868, 83.2185], centrality: 0.74, name: 'Vizag Port', region: 'East' },
-    { id: 16, pos: [25.5941, 85.1376], centrality: 0.6, name: 'Patna Bridge', region: 'East' },
-    { id: 17, pos: [30.9010, 75.8573], centrality: 0.71, name: 'Ludhiana Trade', region: 'North' },
-    { id: 18, pos: [27.1767, 78.0081], centrality: 0.62, name: 'Agra Tourism', region: 'North' },
-    { id: 19, pos: [23.3441, 85.3096], centrality: 0.58, name: 'Ranchi Mining', region: 'East' },
-    { id: 20, pos: [26.1445, 91.7362], centrality: 0.8, name: 'Guwahati Northeast Link', region: 'East' },
-    { id: 21, pos: [30.7333, 76.7794], centrality: 0.75, name: 'Chandigarh Base', region: 'North' },
-    { id: 22, pos: [9.9312, 76.2673], centrality: 0.82, name: 'Kochi Terminal', region: 'South' },
-    { id: 23, pos: [21.1702, 72.8311], centrality: 0.76, name: 'Surat Commercial', region: 'West' }
+    // India (Green)
+    { id: 1, pos: [28.7041, 77.1025], centrality: 0.95, name: 'Delhi', region: 'India' },
+    { id: 2, pos: [19.0760, 72.8777], centrality: 0.98, name: 'Mumbai', region: 'India' },
+    { id: 3, pos: [12.9716, 77.5946], centrality: 0.92, name: 'Bangalore', region: 'India' },
+    { id: 4, pos: [22.5726, 88.3639], centrality: 0.85, name: 'Kolkata', region: 'India' },
+    { id: 5, pos: [13.0827, 80.2707], centrality: 0.88, name: 'Chennai', region: 'India' },
+    { id: 6, pos: [17.3850, 78.4867], centrality: 0.83, name: 'Hyderabad', region: 'India' },
+
+    // USA (Blue)
+    { id: 7, pos: [40.7128, -74.0060], centrality: 0.97, name: 'New York', region: 'USA' },
+    { id: 8, pos: [34.0522, -118.2437], centrality: 0.92, name: 'Los Angeles', region: 'USA' },
+    { id: 9, pos: [41.8781, -87.6298], centrality: 0.89, name: 'Chicago', region: 'USA' },
+    { id: 10, pos: [29.7604, -95.3698], centrality: 0.85, name: 'Houston', region: 'USA' },
+    { id: 40, pos: [37.7749, -122.4194], centrality: 0.90, name: 'San Francisco', region: 'USA' },
+
+    // Europe (Purple)
+    { id: 11, pos: [51.5074, -0.1278], centrality: 0.96, name: 'London', region: 'Europe' },
+    { id: 12, pos: [48.8566, 2.3522], centrality: 0.94, name: 'Paris', region: 'Europe' },
+    { id: 13, pos: [52.5200, 13.4050], centrality: 0.91, name: 'Berlin', region: 'Europe' },
+    { id: 14, pos: [41.9028, 12.4964], centrality: 0.82, name: 'Rome', region: 'Europe' },
+    { id: 15, pos: [40.4168, -3.7038], centrality: 0.84, name: 'Madrid', region: 'Europe' },
+
+    // East Asia (Red)
+    { id: 16, pos: [39.9042, 116.4074], centrality: 0.96, name: 'Beijing', region: 'EastAsia' },
+    { id: 17, pos: [31.2304, 121.4737], centrality: 0.98, name: 'Shanghai', region: 'EastAsia' },
+    { id: 18, pos: [35.6762, 139.6503], centrality: 0.95, name: 'Tokyo', region: 'EastAsia' },
+    { id: 19, pos: [37.5665, 126.9780], centrality: 0.88, name: 'Seoul', region: 'EastAsia' },
+    { id: 20, pos: [22.3193, 114.1694], centrality: 0.93, name: 'Hong Kong', region: 'EastAsia' },
+
+    // Middle East (Gold)
+    { id: 21, pos: [25.2048, 55.2708], centrality: 0.90, name: 'Dubai', region: 'MiddleEast' },
+    { id: 22, pos: [24.7136, 46.6753], centrality: 0.85, name: 'Riyadh', region: 'MiddleEast' },
+    { id: 23, pos: [32.0853, 34.7818], centrality: 0.80, name: 'Tel Aviv', region: 'MiddleEast' },
+    { id: 24, pos: [35.6892, 51.3890], centrality: 0.75, name: 'Tehran', region: 'MiddleEast' },
+
+    // South America (Pink)
+    { id: 25, pos: [-23.5505, -46.6333], centrality: 0.91, name: 'Sao Paulo', region: 'SouthAmerica' },
+    { id: 26, pos: [-34.6037, -58.3816], centrality: 0.87, name: 'Buenos Aires', region: 'SouthAmerica' },
+    { id: 27, pos: [-22.9068, -43.1729], centrality: 0.85, name: 'Rio de Janeiro', region: 'SouthAmerica' },
+    { id: 28, pos: [-12.0464, -77.0428], centrality: 0.78, name: 'Lima', region: 'SouthAmerica' },
+
+    // Africa (Orange)
+    { id: 29, pos: [-26.2041, 28.0473], centrality: 0.86, name: 'Johannesburg', region: 'Africa' },
+    { id: 30, pos: [6.5244, 3.3792], centrality: 0.83, name: 'Lagos', region: 'Africa' },
+    { id: 31, pos: [30.0444, 31.2357], centrality: 0.89, name: 'Cairo', region: 'Africa' },
+    { id: 32, pos: [-1.2921, 36.8219], centrality: 0.77, name: 'Nairobi', region: 'Africa' },
+
+    // Australia (Pink/Magenta)
+    { id: 33, pos: [-33.8688, 151.2093], centrality: 0.88, name: 'Sydney', region: 'Australia' },
+    { id: 34, pos: [-37.8136, 144.9631], centrality: 0.85, name: 'Melbourne', region: 'Australia' },
+
+    // Russia (Ice Blue)
+    { id: 35, pos: [55.7558, 37.6173], centrality: 0.92, name: 'Moscow', region: 'Russia' },
+    { id: 36, pos: [59.9311, 30.3609], centrality: 0.82, name: 'St. Petersburg', region: 'Russia' },
+
+    // Canada (Cyan)
+    { id: 37, pos: [43.6510, -79.3470], centrality: 0.89, name: 'Toronto', region: 'Canada' },
+    { id: 38, pos: [49.2827, -123.1207], centrality: 0.81, name: 'Vancouver', region: 'Canada' }
 ];
 
 const initialEdges = [
-    // Golden Quadrilateral & Major Highways
-    { id: 'e1', source: 1, target: 2, weight: 4.5, type: 'high' }, // Delhi-Mumbai
-    { id: 'e2', source: 2, target: 3, weight: 3.5, type: 'high' }, // Mumbai-BLR
-    { id: 'e3', source: 3, target: 4, weight: 2.8, type: 'mid' },  // BLR-Chennai
-    { id: 'e4', source: 4, target: 5, weight: 3.2, type: 'high' }, // Chennai-Kolkata
-    { id: 'e5', source: 5, target: 1, weight: 4.0, type: 'high' }, // Kolkata-Delhi
+    // India Internal
+    { id: 'i1', source: 1, target: 2, region: 'India' },
+    { id: 'i2', source: 2, target: 3, region: 'India' },
+    { id: 'i3', source: 3, target: 5, region: 'India' },
+    { id: 'i4', source: 5, target: 4, region: 'India' },
+    { id: 'i5', source: 4, target: 1, region: 'India' },
+    { id: 'i6', source: 2, target: 6, region: 'India' },
 
-    // North Network
-    { id: 'e6', source: 1, target: 9, weight: 2.0, type: 'mid' }, // Delhi-Jaipur
-    { id: 'e7', source: 9, target: 8, weight: 1.8, type: 'low' }, // Jaipur-Ahmedabad
-    { id: 'e8', source: 1, target: 21, weight: 1.5, type: 'low' }, // Delhi-Chandigarh
-    { id: 'e9', source: 21, target: 17, weight: 1.2, type: 'low' }, // Chd-Ludhiana
-    { id: 'e10', source: 1, target: 18, weight: 1.6, type: 'mid' }, // Delhi-Agra
-    { id: 'e11', source: 18, target: 11, weight: 1.4, type: 'low' }, // Agra-Kanpur
-    { id: 'e12', source: 11, target: 10, weight: 1.8, type: 'mid' }, // Kanpur-Lucknow
+    // USA Internal
+    { id: 'u1', source: 7, target: 9, region: 'USA' },
+    { id: 'u2', source: 9, target: 8, region: 'USA' },
+    { id: 'u3', source: 8, target: 40, region: 'USA' },
+    { id: 'u4', source: 7, target: 10, region: 'USA' },
 
-    // Central & West Network
-    { id: 'e13', source: 2, target: 7, weight: 2.5, type: 'high' }, // Mumbai-Pune
-    { id: 'e14', source: 2, target: 23, weight: 2.2, type: 'mid' }, // Mumbai-Surat
-    { id: 'e15', source: 23, target: 8, weight: 2.0, type: 'mid' }, // Surat-Ahmedabad
-    { id: 'e16', source: 2, target: 13, weight: 1.9, type: 'low' }, // Mumbai-Indore
-    { id: 'e17', source: 13, target: 14, weight: 1.5, type: 'low' }, // Indore-Bhopal
-    { id: 'e18', source: 14, target: 12, weight: 2.8, type: 'mid' }, // Bhopal-Nagpur
-    { id: 'e19', source: 12, target: 6, weight: 3.0, type: 'high' }, // Nagpur-HYD
-    { id: 'e20', source: 12, target: 5, weight: 2.6, type: 'mid' }, // Nagpur-Kolkata
+    // Europe Internal
+    { id: 'e1', source: 11, target: 12, region: 'Europe' },
+    { id: 'e2', source: 12, target: 13, region: 'Europe' },
+    { id: 'e3', source: 12, target: 15, region: 'Europe' },
+    { id: 'e4', source: 12, target: 14, region: 'Europe' },
+    { id: 'e5', source: 13, target: 35, region: 'Europe' },
 
-    // South Network
-    { id: 'e21', source: 6, target: 3, weight: 2.9, type: 'high' }, // HYD-BLR
-    { id: 'e22', source: 6, target: 4, weight: 2.7, type: 'mid' },  // HYD-Chennai
-    { id: 'e23', source: 3, target: 22, weight: 2.1, type: 'mid' }, // BLR-Kochi
-    { id: 'e24', source: 4, target: 15, weight: 1.8, type: 'low' }, // Chennai-Vizag
-    { id: 'e25', source: 15, target: 5, weight: 2.4, type: 'high' },// Vizag-Kolkata
+    // East Asia Internal
+    { id: 'a1', source: 16, target: 17, region: 'EastAsia' },
+    { id: 'a2', source: 17, target: 20, region: 'EastAsia' },
+    { id: 'a3', source: 16, target: 19, region: 'EastAsia' },
+    { id: 'a4', source: 18, target: 19, region: 'EastAsia' },
 
-    // East / Northeast Network
-    { id: 'e26', source: 5, target: 16, weight: 2.2, type: 'mid' }, // Kolkata-Patna
-    { id: 'e27', source: 5, target: 19, weight: 1.7, type: 'low' }, // Kolkata-Ranchi
-    { id: 'e28', source: 16, target: 10, weight: 2.0, type: 'mid' }, // Patna-Lucknow
-    { id: 'e29', source: 5, target: 20, weight: 3.8, type: 'high' }, // Kolkata-Guwahati (Chicken's neck)
-    { id: 'e30', source: 20, target: 16, weight: 1.5, type: 'low' }  // Guwahati bypass
+    // Middle East Internal
+    { id: 'm1', source: 21, target: 22, region: 'MiddleEast' },
+    { id: 'm2', source: 21, target: 24, region: 'MiddleEast' },
+    { id: 'm3', source: 31, target: 23, region: 'MiddleEast' },
+
+    // South America
+    { id: 'sa1', source: 25, target: 27, region: 'SouthAmerica' },
+    { id: 'sa2', source: 25, target: 26, region: 'SouthAmerica' },
+    { id: 'sa3', source: 26, target: 28, region: 'SouthAmerica' },
+
+    // Africa
+    { id: 'af1', source: 30, target: 29, region: 'Africa' },
+    { id: 'af2', source: 31, target: 32, region: 'Africa' },
+    { id: 'af3', source: 32, target: 29, region: 'Africa' },
+
+    // Australia
+    { id: 'au1', source: 33, target: 34, region: 'Australia' },
+
+    // Canada
+    { id: 'ca1', source: 37, target: 7, region: 'Canada' },
+    { id: 'ca2', source: 38, target: 40, region: 'Canada' },
+
+    // Russia
+    { id: 'ru1', source: 35, target: 36, region: 'Russia' },
+
+    // Global Interconnections (Transatlantic / Transpacific etc)
+    { id: 'g1', source: 7, target: 11, region: 'Global', weight: 4 }, // NY - London
+    { id: 'g2', source: 21, target: 2, region: 'Global', weight: 3 },  // Dubai - Mumbai
+    { id: 'g3', source: 2, target: 11, region: 'Global', weight: 3 },  // Mumbai - London
+    { id: 'g4', source: 40, target: 18, region: 'Global', weight: 4 }, // SF - Tokyo
+    { id: 'g5', source: 18, target: 33, region: 'Global', weight: 2 }, // Tokyo - Sydney
+    { id: 'g6', source: 21, target: 11, region: 'Global', weight: 2 }, // Dubai - London
+    { id: 'g7', source: 21, target: 29, region: 'Global', weight: 2 }, // Dubai - Joburg
+    { id: 'g8', source: 25, target: 7, region: 'Global', weight: 3 },  // Sao Paulo - NY
+    { id: 'g9', source: 17, target: 2, region: 'Global', weight: 2 }   // Shanghai - Mumbai
 ];
 
 const Dashboard = () => {
@@ -95,59 +166,59 @@ const Dashboard = () => {
 
     const activeEdges = getActiveEdges();
 
-    const resilienceIndex = (1 - (disabledNodes.length * 0.15)).toFixed(2);
+    const resilienceIndex = (1 - (disabledNodes.length * 0.05)).toFixed(2);
 
     return (
         <div className="dashboard-container">
-            <div className="dashboard-sidebar glass-panel" style={{ borderTop: '4px solid #00f0ff' }}>
+            <div className="dashboard-sidebar glass-panel" style={{ borderTop: '4px solid #00f0ff', width: '350px' }}>
                 <h2 className="text-gradient" style={{ fontSize: '1.5rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
                     <Zap size={24} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }} />
                     Command Center
                 </h2>
 
                 <div className="stat-card" style={{ background: 'rgba(0,0,0,0.5)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1.5rem' }}>
-                    <h4 style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px', letterSpacing: '1px' }}>RESILIENCE INDEX (R)</h4>
+                    <h4 style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px', letterSpacing: '1px' }}>GLOBAL RESILIENCE INDEX</h4>
                     <div className="stat-value" style={{
-                        color: resilienceIndex < 0.6 ? '#ff003c' : '#00ff66',
+                        color: resilienceIndex < 0.7 ? '#ff003c' : '#00ff66',
                         fontSize: '3rem',
                         fontWeight: '800',
                         lineHeight: '1',
-                        textShadow: `0 0 20px ${resilienceIndex < 0.6 ? '#ff003c55' : '#00ff6655'}`
+                        textShadow: `0 0 20px ${resilienceIndex < 0.7 ? '#ff003c55' : '#00ff6655'}`
                     }}>
                         {Math.max(0, resilienceIndex)}
                     </div>
-                    <p className="stat-desc" style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '12px' }}>Ratio of average shortest path length (Baseline vs Perturbed). Critical integrity warning below 0.60.</p>
                 </div>
 
-                <div className="simulation-panel" style={{ background: 'rgba(0,0,0,0.5)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="simulation-panel" style={{ background: 'rgba(0,0,0,0.5)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', maxHeight: '400px', overflowY: 'auto' }}>
                     <h4 style={{ color: '#fff', fontSize: '1rem', letterSpacing: '1px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <AlertCircle size={18} color="#ff003c" />
-                        Ablation Simulation
+                        Global Network Nodes
                     </h4>
-                    <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '1.2rem', lineHeight: '1.4' }}>
-                        Sys-Override: Manually toggle network nodes to simulate occlusion or structural failure (e.g., flooding, drone strike).
+                    <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '1rem' }}>
+                        Toggle cities to simulate total blackout or structural destruction in that region.
                     </p>
                     <ul className="node-list">
-                        {nodes.map(node => (
+                        {nodes.sort((a, b) => b.centrality - a.centrality).map(node => (
                             <li
                                 key={node.id}
                                 className={`node-item ${disabledNodes.includes(node.id) ? 'disabled' : ''}`}
                                 onClick={() => toggleNode(node.id)}
+                                style={{ borderLeft: `4px solid ${regionColors[node.region]}` }}
                             >
-                                <span>{node.name}</span>
-                                <span className="badge">Worth: {node.centrality}</span>
+                                <span>{node.name} <small style={{ color: '#777' }}>({node.region})</small></span>
+                                <span className="badge">{node.centrality.toFixed(2)}</span>
                             </li>
                         ))}
                     </ul>
-
-                    <button className="btn-secondary" style={{ width: '100%', marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '8px' }} onClick={() => setDisabledNodes([])}>
-                        <RefreshCw size={18} /> Reset Topology
-                    </button>
                 </div>
+
+                <button className="btn-secondary" style={{ width: '100%', marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '8px' }} onClick={() => setDisabledNodes([])}>
+                    <RefreshCw size={18} /> Rebuild Network
+                </button>
             </div>
 
             <div className="dashboard-map">
-                <MapContainer center={center} zoom={5} style={{ height: '100%', width: '100%', borderRadius: '16px', background: '#0b0e14' }}>
+                <MapContainer center={center} zoom={3} style={{ height: '100%', width: '100%', borderRadius: '16px', background: '#0b0e14' }}>
                     <TileLayer
                         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                         attribution='&copy; <a href="https://carto.com/">CART</a>'
@@ -160,18 +231,16 @@ const Dashboard = () => {
                         const targetNode = nodes.find(n => n.id === edge.target);
                         if (!sourceNode || !targetNode) return null;
 
-                        let baseColor = '#00ff66'; // low
-                        if (edge.type === 'mid') baseColor = '#ffff00';
-                        if (edge.type === 'high') baseColor = '#ff003c';
+                        const edgeColor = regionColors[edge.region] || '#ffffff';
 
                         return (
                             <Polyline
                                 key={edge.id}
                                 positions={[sourceNode.pos, targetNode.pos]}
-                                color={edge.isDisabled ? '#444' : baseColor}
+                                color={edge.isDisabled ? '#333' : edgeColor}
                                 weight={edge.isDisabled ? 1 : (edge.weight || 2)}
-                                opacity={edge.isDisabled ? 0.2 : 0.8}
-                                dashArray={edge.isDisabled ? '5, 10' : 'none'}
+                                opacity={edge.isDisabled ? 0.1 : (edge.region === 'Global' ? 0.4 : 0.8)}
+                                dashArray={edge.isDisabled ? '5, 10' : (edge.region === 'Global' ? '4, 8' : 'none')}
                             />
                         );
                     })}
@@ -179,44 +248,30 @@ const Dashboard = () => {
                     {/* Nodes */}
                     {nodes.map(node => {
                         const isDisabled = disabledNodes.includes(node.id);
-                        const color = isDisabled ? '#ff003c' : `rgba(0, 255, 102, ${node.centrality})`;
+                        const baseColor = regionColors[node.region];
                         return (
                             <CircleMarker
                                 key={node.id}
                                 center={node.pos}
-                                radius={isDisabled ? 6 : node.centrality * 15}
-                                color={isDisabled ? '#ff003c' : '#00ff66'}
-                                fillColor={color}
-                                fillOpacity={0.8}
+                                radius={isDisabled ? 4 : node.centrality * 10}
+                                color={isDisabled ? '#ff003c' : baseColor}
+                                fillColor={isDisabled ? '#ff003c' : baseColor}
+                                fillOpacity={isDisabled ? 0.5 : 0.8}
                                 eventHandlers={{
                                     click: () => toggleNode(node.id)
                                 }}
                             >
                                 <Popup>
                                     <div style={{ color: '#000', fontFamily: 'Inter' }}>
-                                        <strong>{node.name}</strong><br />
+                                        <strong>{node.name}</strong> ({node.region})<br />
                                         Centrality: {node.centrality}<br />
-                                        Status: {isDisabled ? 'OFFLINE' : 'ACTIVE'}
+                                        Status: {isDisabled ? 'OFFLINE / DESTROYED' : 'ACTIVE'}
                                     </div>
                                 </Popup>
                             </CircleMarker>
                         )
                     })}
                 </MapContainer>
-
-                {/* Criticality Legend */}
-                <div className="map-legend glass-panel" style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000, padding: '1rem', width: '200px' }}>
-                    <h5 style={{ margin: 0, marginBottom: '0.5rem', color: '#fff' }}>Criticality</h5>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#aaa', marginBottom: '4px' }}>
-                        <span>High</span>
-                        <span>Low</span>
-                    </div>
-                    <div style={{
-                        height: '12px',
-                        background: 'linear-gradient(90deg, #ff003c 0%, #ffff00 50%, #00ff66 100%)',
-                        borderRadius: '6px'
-                    }}></div>
-                </div>
             </div>
         </div>
     );
