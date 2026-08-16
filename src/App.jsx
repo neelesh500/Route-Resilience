@@ -10,6 +10,7 @@ import Methodology from './pages/Methodology';
 import Dashboard from './pages/Dashboard';
 import Evaluation from './pages/Evaluation';
 import Data from './pages/Data';
+import UltronAgent from './components/UltronAgent';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -42,6 +43,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <BackgroundGlobe />
+      <UltronAgent />
       <div className="app-container">
         <Navbar />
         <main className="main-content">

@@ -1,0 +1,93 @@
+.ultron-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ultron-dialogue {
+    background: rgba(255, 0, 60, 0.1);
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.2);
+    padding: 1rem;
+    max-width: 300px;
+    border-radius: 12px;
+    color: #ffd7d7;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+}
+
+.ultron-icon-spin {
+    animation: slowSpin 4s linear infinite;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.ultron-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(11, 14, 20, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.ultron-btn:hover {
+    border-color: rgba(255, 0, 60, 0.5);
+    box-shadow: 0 0 20px rgba(255, 0, 60, 0.3);
+}
+
+.ultron-btn.listening {
+    border-color: #00f0ff;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+}
+
+.ultron-core {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.core-active {
+    animation: ultronGlow 1.5s ease-in-out infinite alternate;
+    box-shadow: inset 0 0 20px #00f0ff;
+}
+
+@keyframes slowSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes ultronGlow {
+    from {
+        box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.2), 0 0 10px rgba(0, 240, 255, 0.2);
+    }
+
+    to {
+        box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.6), 0 0 30px rgba(0, 240, 255, 0.6);
+    }
+}
