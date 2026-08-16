@@ -46,51 +46,8 @@ const BackgroundGlobe = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        let animationFrameId;
-        const handleMouseMove = (e) => {
-            // Calculate offset based on cursor position relative to center
-            const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-            const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
-
-            // Smoothen the movement with requestAnimationFrame
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            animationFrameId = requestAnimationFrame(() => {
-                setMousePos({ x, y });
-                // We could also adjust the scene rotation for a 3D feel
-                if (globeEl.current) {
-                    const scene = globeEl.current.scene();
-                    if (scene) {
-                        // Very subtle 3D tilt based on mouse
-                        scene.rotation.x = y * 0.1;
-                        scene.rotation.y = x * 0.1;
-                    }
-                }
-            });
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        }
-    }, []);
-
     return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: -1,
-            opacity: 0.5,
-            overflow: 'hidden',
-            pointerEvents: 'none',
-            transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)`,
-            transition: 'transform 0.1s ease-out'
-        }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1, opacity: 0.5, overflow: 'hidden', pointerEvents: 'none' }}>
             <Globe
                 ref={globeEl}
                 globeImageUrl="//unpkg.com/three-globe/example/img/earth-dark.jpg"
@@ -108,8 +65,8 @@ const BackgroundGlobe = () => {
                 ringPropagationSpeed="propagationSpeed"
                 ringRepeatPeriod="repeatPeriod"
                 backgroundColor="rgba(0,0,0,0)"
-                width={dimensions.width + 40} /* Add buffer so movement doesn't show edges */
-                height={dimensions.height + 40}
+                width={dimensions.width}
+                height={dimensions.height}
                 atmosphereColor="#00f0ff"
                 atmosphereAltitude={0.15}
             />

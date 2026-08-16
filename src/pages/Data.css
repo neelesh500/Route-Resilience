@@ -1,0 +1,51 @@
+.data-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.data-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-card h3 {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.data-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.data-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.badge-outline {
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: #00f0ff;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+    background: rgba(0, 240, 255, 0.05);
+}
+
+.data-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
