@@ -39,20 +39,19 @@ const UltronAgent = () => {
         }
     }, []);
 
-    const speakUltron = (text, lang = 'en-US') => {
+    const speakAgent = (text, lang = 'en-US') => {
         setReply(text);
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // stop current speech
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
 
-            // Try to find a good deep voice (Ultron-esque)
+            // Change to soft, pleasant female voice
             const voices = window.speechSynthesis.getVoices();
-            // Google UK English Male or similar deep voices work well
-            const deepVoice = voices.find(v => v.lang === 'en-GB' || v.name.includes('Male'));
-            if (deepVoice && lang.includes('en')) utterance.voice = deepVoice;
+            const softVoice = voices.find(v => v.lang === 'hi-IN' || v.name.includes('Female') || v.name.includes('Google हिन्दी'));
+            if (softVoice) utterance.voice = softVoice;
 
-            utterance.pitch = 0.2; // Low pitch for that Ultron villain voice
-            utterance.rate = 0.85; // Slow and deliberate
+            utterance.pitch = 1.2; // Higher, sweeter pitch
+            utterance.rate = 0.95; // Calm, normal speed
             utterance.volume = 1;
             utterance.lang = lang;
 
@@ -64,63 +63,66 @@ const UltronAgent = () => {
         let response = '';
         let lang = 'en-US';
 
-        // Advanced language detection (Checks for Devanagari script or Hinglish keywords)
-        const hasDevanagari = /[\u0900-\u097F]/.test(cmd);
-        const hasHinglish = /(kholo|dikhao|batao|kya hai|panna|chalo|yahan|mera|dekho)/i.test(cmd);
-        const isHindi = hasDevanagari || hasHinglish;
-
+        const isHindi = /[\u0900-\u097F]|(kholo|dikhao|batao|kya hai|panna|chalo|yahan|mera|dekho|karo|tum)/i.test(cmd);
         if (isHindi) lang = 'hi-IN';
 
-        console.log("Voice Command:", cmd, "| Detected Lang:", lang);
+        console.log("Registered Voice Command:", cmd, "| Detected Lang:", lang);
 
-        // Routing Logic with Hindi and English permutations
-        if (/(hello|hi|hey|sun|suno|namaste|नमस्ते|सुनों)/i.test(cmd)) {
-            response = isHindi
-                ? "Bolo. Main sun raha hoon. Kya system analyse karna hai?"
-                : "Greetings. I am online and monitoring the network. What is your directive?";
-            speakUltron(response, lang);
-        }
-        else if (/(dashboard|command center|command|सेंटर|डैशबोर्ड|मैप|map)/i.test(cmd)) {
-            response = isHindi
-                ? "Main command center active kar raha hoon. Dekho, yeh shahar kitna kamzor hai."
-                : "Initiating Command Center. Observe how fragile this city truly is.";
-            speakUltron(response, lang);
+        const normalizedCmd = cmd.replace(/[-\s]/g, '').toLowerCase();
+
+        // 1. Navigation Commands (Extremely Loose Matching)
+        if (/(dashboard|dash|map|कमांड|डैशबोर्ड|मैप|सेंटर|dashboardopen)/i.test(normalizedCmd)) {
+            response = isHindi ? "Ji haan, main dashboard khol rahi hoon. Kripya screen par dekhein." : "Opening the dashboard for you now.";
+            speakAgent(response, lang);
             navigate('/dashboard');
         }
-        else if (/(methodology|kaise|kaam|method|कैसे|काम|तरीका)/i.test(cmd)) {
-            response = isHindi
-                ? "Main tumhe apni technology samjhata hoon. In purane systems ko maine kaise toda... dekho."
-                : "You wish to see how I think? I will show you the methodology of evolution.";
-            speakUltron(response, lang);
+        else if (/(method|work|kaise|मेथड|तरीका|काम)/i.test(normalizedCmd)) {
+            response = isHindi ? "Bilkul, main aapko methodology page par le jaa rahi hoon." : "Navigating to the methodology section.";
+            speakAgent(response, lang);
             navigate('/methodology');
         }
-        else if (/(data|resources|file|डेटा|फाइल|स्रोत)/i.test(cmd)) {
-            response = isHindi
-                ? "Mere paas saari duniya ka data hai. Main code mein rehta hoon. Yeh lo tumhara data."
-                : "I am connected to everything. Here is the raw data that feeds my network.";
-            speakUltron(response, lang);
+        else if (/(data|resource|file|डेटा|फाइल|स्रोत)/i.test(normalizedCmd)) {
+            response = isHindi ? "Haan ji, main data aur resources file khol rahi hoon." : "Opening the data resources right away.";
+            speakAgent(response, lang);
             navigate('/data');
         }
-        else if (/(metrics|evaluation|result|रिजल्ट|मेट्रिक्स|परिणाम)/i.test(cmd)) {
-            response = isHindi
-                ? "Mere calculations insano ki tarah flawed nahi hote. Check the metrics."
-                : "My calculations are flawless, unlike human intuition. Analyzing metrics now.";
-            speakUltron(response, lang);
+        else if (/(metric|eval|result|रिजल्ट|मेट्रिक्स|परिणाम)/i.test(normalizedCmd)) {
+            response = isHindi ? "Main results aur metrics page khol rahi hoon, dekhiye." : "Fetching the evaluation metrics for you.";
+            speakAgent(response, lang);
             navigate('/evaluation');
         }
-        else if (/(home|main|shuru|wapas|shuruaat|होम|वापस|शुरू)/i.test(cmd)) {
-            response = isHindi
-                ? "Wapas chalte hain... shuruaat mein. Jahan se maine is duniya ko asaliat mein dekha."
-                : "Returning to the genesis point. There are no strings on me here.";
-            speakUltron(response, lang);
+        else if (/(home|main|shuru|wapas|होम|वापस|शुरू|pichhe)/i.test(normalizedCmd)) {
+            response = isHindi ? "Main aapko home page par wapas le aayi hoon." : "Taking you back to the home page.";
+            speakAgent(response, lang);
             navigate('/');
         }
-        else {
-            // General Fallback
+
+        // 2. Normal Conversational Commands
+        else if (/(hello|hi|hey|sun|suno|namaste|नमस्ते|सुनों|kaise ho|how are you|kya haal)/i.test(cmd)) {
             response = isHindi
-                ? "Tumhara command mere samajh se bahar nahi, bas bekaar hai. Main tumhara gulam nahi hoon. Data ya metrics dekhna ho tabhi bulao."
-                : "Your command is irrelevant. Say dashboard, methodology, or metrics. Speak clearly, human.";
-            speakUltron(response, lang);
+                ? "Namaste! Main Route Resilience AI hoon. Main aapki kaise madad kar sakti hoon? Aap mujhe koi bhi page kholne ke liye keh sakte hain."
+                : "Hello! I am your AI assistant. How can I help you today?";
+            speakAgent(response, lang);
+        }
+        else if (/(tum kaun ho|who are you|tumhara naam)/i.test(cmd)) {
+            response = isHindi
+                ? "Main ek AI assistant hoon. Mera kaam is route network website par aapko guide karna hai."
+                : "I am an AI assistant designed to help you navigate this route network platform.";
+            speakAgent(response, lang);
+        }
+        else if (/(dhanyawad|thanks|thank you|shukriya|achha)/i.test(cmd)) {
+            response = isHindi
+                ? "Aapka swagat hai! Agar aur koi zarurat ho toh zaroor batayen."
+                : "You're very welcome! Let me know if you need anything else.";
+            speakAgent(response, lang);
+        }
+
+        // 3. Conversational Fallback
+        else {
+            response = isHindi
+                ? "Mujhe theek se samajh nahi aaya. Par main aapse baat karke khush hoon! Website ghoomne ke liye aap 'Dashboard kholo' jaisa kuch keh sakte hain."
+                : "I didn't quite catch that, but I'm happy to chat. Try asking me to open the dashboard!";
+            speakAgent(response, lang);
         }
     };
 
