@@ -116,18 +116,18 @@
 }
 
 .bg-sat {
-    background-image: url('https://images.unsplash.com/photo-1518349619113-03114f06ac3a?q=80&w=2070&auto=format&fit=crop');
-    filter: brightness(0.8);
+    background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=800');
+    filter: brightness(0.8) contrast(1.1);
 }
 
 .bg-extract {
-    background-image: url('https://images.unsplash.com/photo-1558227092-986c7dbced42?q=80&w=2070&auto=format&fit=crop');
-    filter: contrast(1.2) grayscale(1);
+    background-image: url('https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&q=80&w=800');
+    filter: contrast(1.3) hue-rotate(180deg);
 }
 
 .bg-graph {
-    background-image: url('https://plus.unsplash.com/premium_photo-1673827419142-c2e7baee7081?q=80&w=2036&auto=format&fit=crop');
-    filter: hue-rotate(90deg) brightness(1.2);
+    background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800');
+    filter: hue-rotate(90deg) brightness(1.2) contrast(1.2);
 }
 
 .border-glow {

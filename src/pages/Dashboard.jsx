@@ -3,25 +3,55 @@ import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from 'react-le
 import { AlertCircle, RefreshCw, Zap } from 'lucide-react';
 import './Dashboard.css';
 
-// Mock Bengaluru Data
-const center = [12.9716, 77.5946];
+// Mock Global & Regional Data
+const center = [20, 0]; // Global center
 
 // Criticality Worth simulated (Betweenness Centrality)
 const nodes = [
-    { id: 1, pos: [12.9716, 77.5946], centrality: 0.9, name: 'MG Road Junction' },
-    { id: 2, pos: [12.9650, 77.6000], centrality: 0.6, name: 'Residency Road' },
-    { id: 3, pos: [12.9800, 77.6050], centrality: 0.8, name: 'Indiranagar Path' },
-    { id: 4, pos: [12.9600, 77.5900], centrality: 0.4, name: 'Koramangala Link' },
-    { id: 5, pos: [12.9850, 77.5850], centrality: 0.7, name: 'Vidhana Soudha' },
+    // India
+    { id: 1, pos: [19.0760, 72.8777], centrality: 0.9, name: 'Mumbai Hub', region: 'Asia' },
+    { id: 2, pos: [28.7041, 77.1025], centrality: 0.7, name: 'Delhi Core', region: 'Asia' },
+    { id: 3, pos: [12.9716, 77.5946], centrality: 0.8, name: 'Bangalore Tech Park', region: 'Asia' },
+
+    // Europe
+    { id: 4, pos: [51.5074, -0.1278], centrality: 0.95, name: 'London Node', region: 'Europe' },
+    { id: 5, pos: [48.8566, 2.3522], centrality: 0.85, name: 'Paris Core', region: 'Europe' },
+    { id: 6, pos: [52.5200, 13.4050], centrality: 0.6, name: 'Berlin Grid', region: 'Europe' },
+
+    // America
+    { id: 7, pos: [40.7128, -74.0060], centrality: 0.9, name: 'NY Exchange', region: 'America' },
+    { id: 8, pos: [34.0522, -118.2437], centrality: 0.75, name: 'LA Transit', region: 'America' },
+    { id: 9, pos: [37.7749, -122.4194], centrality: 0.88, name: 'SF Valley', region: 'America' },
+
+    // Asia
+    { id: 10, pos: [35.6762, 139.6503], centrality: 0.92, name: 'Tokyo Core', region: 'Asia' },
+    { id: 11, pos: [1.3521, 103.8198], centrality: 0.8, name: 'Singapore Port', region: 'Asia' },
+    { id: 12, pos: [31.2304, 121.4737], centrality: 0.77, name: 'Shanghai Hub', region: 'Asia' },
 ];
 
 const initialEdges = [
-    { id: 'e1', source: 1, target: 2, weight: 1 },
-    { id: 'e2', source: 1, target: 3, weight: 2 },
-    { id: 'e3', source: 1, target: 4, weight: 1.5 },
-    { id: 'e4', source: 1, target: 5, weight: 1.2 },
-    { id: 'e5', source: 2, target: 4, weight: 3 },
-    { id: 'e6', source: 3, target: 5, weight: 2.5 }
+    // Asia links
+    { id: 'e1', source: 1, target: 2, weight: 1.5, type: 'high' },
+    { id: 'e2', source: 1, target: 3, weight: 1.2, type: 'mid' },
+    { id: 'e3', source: 2, target: 3, weight: 1.0, type: 'low' },
+    { id: 'e4', source: 10, target: 12, weight: 2.0, type: 'high' },
+    { id: 'e5', source: 11, target: 12, weight: 1.3, type: 'mid' },
+    { id: 'e6', source: 3, target: 11, weight: 2.5, type: 'high' },
+
+    // Europe links
+    { id: 'e7', source: 4, target: 5, weight: 1.1, type: 'high' },
+    { id: 'e8', source: 5, target: 6, weight: 1.3, type: 'mid' },
+    { id: 'e9', source: 4, target: 6, weight: 1.8, type: 'low' },
+
+    // America links
+    { id: 'e10', source: 7, target: 8, weight: 2.2, type: 'mid' },
+    { id: 'e11', source: 8, target: 9, weight: 1.0, type: 'low' },
+    { id: 'e12', source: 7, target: 9, weight: 2.5, type: 'high' },
+
+    // Inter-continental
+    { id: 'e13', source: 4, target: 7, weight: 4.5, type: 'high' },
+    { id: 'e14', source: 1, target: 4, weight: 3.5, type: 'mid' },
+    { id: 'e15', source: 10, target: 9, weight: 5.0, type: 'high' }
 ];
 
 const Dashboard = () => {
@@ -96,23 +126,30 @@ const Dashboard = () => {
             </div>
 
             <div className="dashboard-map">
-                <MapContainer center={center} zoom={14} style={{ height: '100%', width: '100%', borderRadius: '16px', background: '#0b0e14' }}>
+                <MapContainer center={center} zoom={2} style={{ height: '100%', width: '100%', borderRadius: '16px', background: '#0b0e14' }}>
                     <TileLayer
                         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                         attribution='&copy; <a href="https://carto.com/">CART</a>'
+                        noWrap={true}
                     />
 
                     {/* Edges */}
                     {activeEdges.map(edge => {
                         const sourceNode = nodes.find(n => n.id === edge.source);
                         const targetNode = nodes.find(n => n.id === edge.target);
+                        if (!sourceNode || !targetNode) return null;
+
+                        let baseColor = '#00ff66'; // low
+                        if (edge.type === 'mid') baseColor = '#ffff00';
+                        if (edge.type === 'high') baseColor = '#ff003c';
+
                         return (
                             <Polyline
                                 key={edge.id}
                                 positions={[sourceNode.pos, targetNode.pos]}
-                                color={edge.isDisabled ? '#ff003c' : '#00f0ff'}
-                                weight={edge.isDisabled ? 2 : 4}
-                                opacity={edge.isDisabled ? 0.3 : 0.8}
+                                color={edge.isDisabled ? '#444' : baseColor}
+                                weight={edge.isDisabled ? 1 : (edge.weight || 2)}
+                                opacity={edge.isDisabled ? 0.2 : 0.8}
                                 dashArray={edge.isDisabled ? '5, 10' : 'none'}
                             />
                         );
